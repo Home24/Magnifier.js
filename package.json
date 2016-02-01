@@ -1,0 +1,28 @@
+{
+  "name": "magnifier",
+  "version": "1.0.0",
+  "description": "Javascript library enabling magnifying glass effect on an images",
+  "main": "src/magnifier.js",
+  "scripts": {
+    "build": "webpack -verbose --colors --display-error-details --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Home24/Magnifier.js.git"
+  },
+  "keywords": [
+    "magnifier",
+    "home24",
+    "image",
+    "zoom"
+  ],
+  "author": "Mark Rolich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Home24/Magnifier.js/issues"
+  },
+  "homepage": "https://github.com/Home24/Magnifier.js#readme",
+  "devDependencies": {
+    "webpack": "^1.12.12"
+  }
+}

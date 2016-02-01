@@ -20,7 +20,10 @@
 *
 * @author Mark Rolich <mark.rolich@gmail.com>
 */
-var Magnifier = function (evt, options) {
+
+var evt = require('./helpers/event');
+
+var Magnifier = function (options) {
     "use strict";
 
     var gOptions = options || {},
@@ -87,6 +90,7 @@ var Magnifier = function (evt, options) {
         data = {},
         inBounds = false,
         isOverThumb = 0,
+
         getElementsByClass = function (className) {
             var list = [],
                 elements = null,
@@ -112,6 +116,7 @@ var Magnifier = function (evt, options) {
 
             return list;
         },
+
         $ = function (selector) {
             var idx = '',
                 type = selector.charAt(0),
@@ -134,6 +139,7 @@ var Magnifier = function (evt, options) {
 
             return result;
         },
+
         createLens = function (thumb, idx) {
             var lens = document.createElement('div');
 
@@ -142,6 +148,7 @@ var Magnifier = function (evt, options) {
 
             thumb.parentNode.appendChild(lens);
         },
+
         updateLensOnZoom = function () {
             curLens.style.left = pos.l + 'px';
             curLens.style.top = pos.t + 'px';
@@ -155,6 +162,7 @@ var Magnifier = function (evt, options) {
             curLarge.style.width = curData.largeW + 'px';
             curLarge.style.height = curData.largeH + 'px';
         },
+
         updateLensOnLoad = function (idx, thumb, large, largeWrapper) {
             var lens = $('#' + idx + '-lens'),
                 textWrapper = null;
@@ -186,20 +194,19 @@ var Magnifier = function (evt, options) {
             lens.style.width = data[idx].lensW + 'px';
             lens.style.height = data[idx].lensH + 'px';
         },
+
         getMousePos = function () {
             var xPos = pos.x - curData.x,
                 yPos = pos.y - curData.y,
-                t    = 0,
-                l    = 0;
+                t,
+                l;
 
-            inBounds = (
+            inBounds = !(
                 xPos < 0 ||
                 yPos < 0 ||
                 xPos > curData.w ||
                 yPos > curData.h
-            )
-                ? false
-                : true;
+            );
 
             l = xPos - (curData.lensW / 2);
             t = yPos - (curData.lensH / 2);
@@ -236,6 +243,7 @@ var Magnifier = function (evt, options) {
                 curData.largeT = Math.round(curData.lensBgY * curData.zoom * (curData.largeWrapperH / curData.h));
             }
         },
+
         zoomInOut = function (e) {
             var delta = (e.wheelDelta > 0 || e.detail < 0) ? 0.1 : -0.1,
                 handler = curData.onzoom,
@@ -288,6 +296,7 @@ var Magnifier = function (evt, options) {
                 curData.zoom = curData.zoomMin;
             }
         },
+
         onThumbEnter = function () {
             curData = data[curIdx];
             curLens = $('#' + curIdx + '-lens');
@@ -315,6 +324,7 @@ var Magnifier = function (evt, options) {
                 curLens.className = 'magnifier-loader';
             }
         },
+
         onThumbLeave = function () {
             if (curData.status > 0) {
                 var handler = curData.onthumbleave;
@@ -339,6 +349,7 @@ var Magnifier = function (evt, options) {
                 }
             }
         },
+
         move = function () {
             if (status !== curData.status) {
                 onThumbEnter();
@@ -377,6 +388,7 @@ var Magnifier = function (evt, options) {
 
             status = curData.status;
         },
+
         setThumbData = function (thumb, thumbData) {
             var thumbBounds = thumb.getBoundingClientRect(),
                 w = 0,
@@ -464,9 +476,7 @@ var Magnifier = function (evt, options) {
                         : curData.onzoom;
 
         if (options.large === undefined) {
-            largeUrl = (options.thumb.getAttribute('data-large-img-url') !== null)
-                            ? options.thumb.getAttribute('data-large-img-url')
-                            : options.thumb.src;
+            largeUrl = options.thumb.getAttribute('data-large-img-url') || options.thumb.src;
         } else {
             largeUrl = options.large;
         }
@@ -481,7 +491,7 @@ var Magnifier = function (evt, options) {
 
         if (options.zoomable !== undefined) {
             zoomable = options.zoomable;
-        } else if (thumb.getAttribute('data-zoomable') !== null) {
+        } else if (thumb.getAttribute('data-zoomable')) {
             zoomable = (thumb.getAttribute('data-zoomable') === 'true');
         } else if (curData.zoomable !== undefined) {
             zoomable = curData.zoomable;
@@ -544,7 +554,7 @@ var Magnifier = function (evt, options) {
             }
         }, false);
 
-        evt.attach('mousemove', thumb, function (e, src) {
+        evt.attach('mousemove', thumb, function () {
             isOverThumb = 1;
         });
 
@@ -588,3 +598,5 @@ var Magnifier = function (evt, options) {
         }
     });
 };
+
+module.exports = Magnifier;
